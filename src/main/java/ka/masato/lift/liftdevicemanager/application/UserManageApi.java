@@ -1,5 +1,9 @@
 package ka.masato.lift.liftdevicemanager.application;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import ka.masato.lift.liftdevicemanager.domain.model.Lift;
 import ka.masato.lift.liftdevicemanager.domain.model.LiftUser;
 import ka.masato.lift.liftdevicemanager.domain.service.LiftUserService;
 import ka.masato.lift.liftdevicemanager.security.login.PrincipalUser;
@@ -17,11 +21,19 @@ public class UserManageApi {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "ユーザ情報を返す。", response = LiftUser.class)
+    @ApiResponses(value = {
+    }
+    )
     public LiftUser getUser(@AuthenticationPrincipal PrincipalUser user){
         return user.getUser();
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "ユーザ情報を更新する。", response = Iterable.class)
+    @ApiResponses(value = {
+    }
+    )
     public LiftUser updateUser(@AuthenticationPrincipal PrincipalUser user, @RequestBody LiftUser liftUser){
         LiftUser result = null;
         return result;
