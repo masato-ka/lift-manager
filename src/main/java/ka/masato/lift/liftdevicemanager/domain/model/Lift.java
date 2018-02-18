@@ -2,6 +2,7 @@ package ka.masato.lift.liftdevicemanager.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,9 +32,10 @@ public class Lift {
     mappedBy = "lift")
     private StoredItem things;
 
-    @OneToMany(mappedBy = "lift")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lift")
+    @JsonIgnore
     private List<Event> events;
-    @OneToMany(mappedBy = "lift")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lift")
     private List<Schedule> schedules;
 
     @ManyToOne(fetch = FetchType.LAZY)
