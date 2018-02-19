@@ -26,7 +26,6 @@ public class Lift {
     //TODO Do Not Update deviceName;
     private String deviceId;
     private String imsi;
-    private String status;
     @OneToOne(fetch = FetchType.LAZY,
     cascade =  CascadeType.ALL,
     mappedBy = "lift")
