@@ -18,10 +18,9 @@ public class StoredItem {
     @GeneratedValue
     private Integer itemId;
     private String itemName;
-    private Integer weight;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "liftId", nullable = false)
     @JsonIgnore
     private Lift lift;
 }
