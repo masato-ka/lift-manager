@@ -55,14 +55,26 @@ public class DeviceManageApi {
         return result;
     }
 
+    @GetMapping("deviceName/{deviceName}")
+    @ApiOperation(value = "ユーザの持つLiftの一覧を返す", response = Iterable.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "リクエストが正常に処理された。"),
+    }
+    )
+    public Lift getLiftIdFromDevieName(@PathVariable String deviceName) {
+        Lift lift = liftsService.getLiftByDeviceId(deviceName);
+        return lift;
+
+    }
+
     @GetMapping(value="{id}")
     @ApiOperation(value = "指定されたIDのLiftを返す。",response = Lift.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "リクエストが正常に処理された。"),
     }
     )
-    public Lift getDevice(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id){
-        Lift result = liftsService.getLiftById(user.getUser(), id);
+    public Lift getDevice(@PathVariable Integer id) {
+        Lift result = liftsService.getLiftById(id);
         return result;
     }
 
@@ -72,9 +84,9 @@ public class DeviceManageApi {
             @ApiResponse(code = 200, message = "リクエストが正常に処理された。"),
     }
     )
-
-    public Lift updateDevice(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id){
-        Lift result = liftsService.getLiftById(user.getUser(), id);
+    public Lift updateDevice(@PathVariable Integer id, @RequestBody Lift lift) {
+        lift.setLiftId(id);
+        Lift result = liftsService.updateLift(lift);
         return result;
     }
 
@@ -85,9 +97,9 @@ public class DeviceManageApi {
             @ApiResponse(code = 203, message = "リクエストが正常に処理された。"),
     }
     )
-    public void deleteDevice(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id)
+    public void deleteDevice(@PathVariable Integer id)
             throws IOException, IotHubException {
-        liftsService.deleteLift(user.getUser(), id);
+        liftsService.deleteLift(id);
     }
 
     @GetMapping(value= "{id}/item")
@@ -97,7 +109,7 @@ public class DeviceManageApi {
     }
     )
     public StoredItem getStoredItem(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id){
-        Lift lift = liftsService.getLiftById(user.getUser(), id);
+        Lift lift = liftsService.getLiftById(id);
         return lift.getThings();
     }
 
@@ -110,7 +122,7 @@ public class DeviceManageApi {
     )
     public StoredItem createStoredItem(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id,
                                        @RequestBody StoredItem storedItem){
-        Lift lift = liftsService.getLiftById(user.getUser(), id);
+        Lift lift = liftsService.getLiftById(id);
         storedItem.setLift(lift);
         StoredItem result = storedItemService.saveStoredItem(storedItem);
         return result;
@@ -125,7 +137,7 @@ public class DeviceManageApi {
     )
     public StoredItem updateStoredItem(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id,
                                        @RequestBody StoredItem storedItem){
-        Lift lift = liftsService.getLiftById(user.getUser(), id);
+        Lift lift = liftsService.getLiftById(id);
         storedItem.setLift(lift);
         StoredItem result = storedItemService.saveStoredItem(storedItem);
         return result;
@@ -139,7 +151,7 @@ public class DeviceManageApi {
     }
     )
     public void deleteStoredItem(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer id){
-        Lift lift = liftsService.getLiftById(user.getUser(), id);
+        Lift lift = liftsService.getLiftById(id);
         StoredItem storedItem = lift.getThings();
         lift.setThings(null);
         storedItemService.deleteStoredItem(storedItem.getItemId());

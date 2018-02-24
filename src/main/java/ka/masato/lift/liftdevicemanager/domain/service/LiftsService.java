@@ -6,10 +6,11 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import ka.masato.lift.liftdevicemanager.domain.model.Lift;
 import ka.masato.lift.liftdevicemanager.domain.model.LiftUser;
-import ka.masato.lift.liftdevicemanager.domain.repository.LiftsRepository;
 import ka.masato.lift.liftdevicemanager.domain.repository.LiftUserRepository;
-import ka.masato.lift.liftdevicemanager.domain.service.exceptions.UserPermitRefferenceException;
+import ka.masato.lift.liftdevicemanager.domain.repository.LiftsRepository;
 import ka.masato.lift.liftdevicemanager.infra.soracom.SoracomApiManager;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Service
 public class LiftsService {
 
@@ -38,40 +40,39 @@ public class LiftsService {
 
     @Transactional
     public Lift addNewLift(LiftUser user, Lift lift) throws IOException, IotHubException, NoSuchAlgorithmException {
-        Lift result = null;
-        String devicePrimaryKey = "";
         lift.setUser(user);
-        //if(registryManager.getDevice(lift.getDeviceId()) != null){
-            Device preDevice = Device.createFromId(lift.getDeviceId(), null,null);
-            Device device = registryManager.addDevice(preDevice);
-            devicePrimaryKey = device.getPrimaryKey();
-            lift.setUser(user);
-            result = liftsRepository.save(lift);
-        //}else{
-        //    throw new DeviceAlreadyExsistsOnIoTHub();
-        //}
-
+        Device preDevice = Device.createFromId(lift.getImsi(), null, null);
+        Device device = registryManager.addDevice(preDevice);
+        lift.setUser(user);
+        //TODO ADD SORACOM Air sim enable.
+        Lift result = liftsRepository.save(lift);
         return result;
     }
 
     @Transactional
-    public void deleteLift(LiftUser user, Integer id) throws IOException, IotHubException {
-
-        Lift lift = liftsRepository.findOne(id);
-        if(user.getUserId().equals(lift.getUser().getUserId())){
-            liftsRepository.delete(id);
-            registryManager.removeDevice(lift.getDeviceId());
-        }else{
-            throw new UserPermitRefferenceException();
-        }
-
+    public void deleteLift(Integer id) throws IOException, IotHubException {
+        Lift lift = new Lift();
+        lift.setLiftId(id);
+        Lift prevLift = getUpdateOrigin(lift);
+        liftsRepository.delete(prevLift.getLiftId());
+        registryManager.removeDevice(prevLift.getDeviceId());
         return;
     }
 
+    @Transactional
+    public Lift updateLift(Lift lift) {
 
-    public Lift updateLift(LiftUser user, Lift lift ){
-        Lift result = liftsRepository.save(lift);
+        Lift origin = getUpdateOrigin(lift);
+        Lift result = liftsRepository.save(origin);
         return result;
+    }
+
+    @PostAuthorize("hasRole('ROLE_ADMIN') or (#lift.user == principal.username)")
+    private Lift getUpdateOrigin(Lift lift) {
+        Lift origin = liftsRepository.findOne(lift.getLiftId());
+        origin.setDeviceId(lift.getDeviceId());
+        origin.setImsi(lift.getImsi());
+        return origin;
     }
 
     public List<Lift> getAllLifts(LiftUser user){
@@ -79,12 +80,15 @@ public class LiftsService {
         return lifts;
     }
 
-    public Lift getLiftById(LiftUser user, Integer id) {
+    @PostAuthorize("hasRole('ROLE_ADMIN') or (returnObject.user.userId == principal.username)")
+    public Lift getLiftByDeviceId(String deviceName) {
+        Lift result = liftsRepository.findByDeviceId(deviceName);
+        return result;
+    }
+
+    @PostAuthorize("hasRole('ROLE_ADMIN') or (returnObject.user.userId == principal.username)")
+    public Lift getLiftById(Integer id) {
         Lift result = liftsRepository.findOne(id);
-        LiftUser deviceHasUser = result.getUser();
-        if(!user.getUserId().equals(deviceHasUser.getUserId())){
-            throw new UserPermitRefferenceException();
-        }
         return result;
     }
 

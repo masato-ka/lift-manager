@@ -2,6 +2,7 @@ package ka.masato.lift.liftdevicemanager.infra;
 
 import com.microsoft.azure.sdk.iot.service.RegistryManager;
 import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwin;
+import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -21,5 +22,10 @@ public class AzureConfig {
     @Bean
     DeviceTwin getDeviceTwin() throws IOException {
         return DeviceTwin.createFromConnectionString(deviceTwinConnection);
+    }
+
+    @Bean
+    JobClient getJobClient() throws IOException {
+        return JobClient.createFromConnectionString(registryConnection);
     }
 }

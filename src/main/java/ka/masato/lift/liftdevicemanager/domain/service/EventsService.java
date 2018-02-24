@@ -15,16 +15,16 @@ import java.util.List;
 public class EventsService {
 
     private final EventsRepository eventsRepository;
-    private final LiftsRepository liftsRepository;
+    private final LiftsRepository liftsService;
 
-    public EventsService(EventsRepository eventsRepository, LiftsRepository liftsRepository) {
+    public EventsService(EventsRepository eventsRepository, LiftsRepository liftsService) {
         this.eventsRepository = eventsRepository;
-        this.liftsRepository = liftsRepository;
+        this.liftsService = liftsService;
     }
 
     @Transactional
     public Event createNewEvent(LiftUser user, Integer liftId, Event event) {
-        Lift lift = liftsRepository.findOne(liftId);
+        Lift lift = liftsService.findOne(liftId);
         if (!lift.getUser().getUserId().equals(user.getUserId())) {
             throw new UserPermitRefferenceException();
         }
@@ -35,7 +35,7 @@ public class EventsService {
 
     public List<Event> getDeviceEvent(LiftUser user, Integer liftId) {
         List<Event> result = null;
-        Lift lift = liftsRepository.findOne(liftId);
+        Lift lift = liftsService.findOne(liftId);
         if (!lift.getUser().getUserId().equals(user.getUserId())) {
             throw new UserPermitRefferenceException();
         }
