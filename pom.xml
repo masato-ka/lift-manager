@@ -5,7 +5,7 @@
 
 	<groupId>ka.masato.lift</groupId>
 	<artifactId>lift-device-manager</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>lift-device-manager</name>
@@ -95,7 +95,7 @@
 			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-webapp-maven-plugin</artifactId>
-				<version>0.1.5</version>
+				<version>0.1.6</version>
 				<configuration>
 					<authentication>
 						<serverId>azure-auth</serverId>
