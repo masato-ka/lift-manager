@@ -1,0 +1,49 @@
+<ons-page id="Schedule" ng-controller="ScheduleController">
+
+    <ons-pull-hook ng-action="load($done)" var="loader">
+            <span ng-switch="loader.state">
+                <span ng-switch-when="initial"><ons-icon size="35px" icon="ion-arrow-down-a"></ons-icon> Pull down to refresh</span>
+                <span ng-switch-when="preaction"><ons-icon size="35px" icon="ion-arrow-up-a"></ons-icon> Release to refresh</span>
+                <span ng-switch-when="action"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading data...</span>
+            </span>
+    </ons-pull-hook>
+
+    <ons-card ng-repeat="schedule in data.schedules">
+        <div class="title">
+            Schedule of {{schedule.name}} in {{data.deviceId}}
+        </div>
+        <div class="content">
+            <div>
+                <ons-button>
+                    <ons-icon icon="ion-edit"></ons-icon>
+                </ons-button>
+                <ons-button>
+                    <ons-icon icon="ion-ios-trash"></ons-icon>
+                </ons-button>
+            </div>
+            <ons-list>
+                <ons-list-header>Details</ons-list-header>
+                <ons-list-item>Date: {{schedule.date}}</ons-list-item>
+                <ons-list-item>Status: {{schedule.status}}</ons-list-item>
+                <ons-list-item>{{schedule.description}}</ons-list-item>
+            </ons-list>
+        </div>
+    </ons-card>
+    <ons-fab position="bottom right">
+        <ons-icon ng-click="update()" page="" icon="md-plus"></ons-icon>
+    </ons-fab>
+
+    <p style="text-align: center;font-size: 300%">
+    <div>
+        <ons-input id="date" modifier="underbar" type="datetime-local" ng-model="scheduleDate"
+                   placeholder="yyyy-MM-ddTHH:mm:ss" float></ons-input>
+        <ons-input id="scheduleName" modifier="underbar" ng-model="scheduleName" placeholder="schedule name"
+                   float></ons-input>
+        <ons-input id="scheduleDescrition" modifier="underbar" ng-model="scheduleDescription"
+                   placeholder="schedule description" float></ons-input>
+    </div>
+    </p>
+    <p style="text-align: center">
+
+    </p>
+</ons-page>

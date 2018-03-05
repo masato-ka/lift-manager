@@ -48,6 +48,18 @@ public class ScheduleApi {
     }
 
 
+    @PutMapping("/devices/{deviceId}/schedules/{scheduleId}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public Schedule updateSchedule(@PathVariable Integer deviceId, @PathVariable String scheduleId,
+                                   @RequestBody Schedule schedule) throws IOException, IotHubException {
+        return scheduleService.updateSchedule(deviceId, scheduleId, schedule);
+    }
+
+    @DeleteMapping("/devices/{deviceId}/schedules/{scheduleId}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteSchedule(@PathVariable Integer deviceId, @PathVariable String scheduleId) throws IOException, IotHubException {
+        scheduleService.cancelSchedule(deviceId, scheduleId);
+    }
 
 
 }

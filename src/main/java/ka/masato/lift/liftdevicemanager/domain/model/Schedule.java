@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Table
+@Table(name = "schedule")
 @Entity
 @Data
 @NoArgsConstructor
@@ -21,6 +21,7 @@ public class Schedule {
     private String scheduleId;
     private String name;
     private String description;
+    private String api;
     private String status;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")

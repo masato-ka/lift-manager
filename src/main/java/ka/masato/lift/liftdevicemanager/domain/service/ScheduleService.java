@@ -6,15 +6,22 @@ import ka.masato.lift.liftdevicemanager.domain.model.Lift;
 import ka.masato.lift.liftdevicemanager.domain.model.Schedule;
 import ka.masato.lift.liftdevicemanager.domain.repository.ScheduleRepository;
 import ka.masato.lift.liftdevicemanager.domain.service.exceptions.UserPermitRefferenceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ScheduleService {
 
@@ -36,21 +43,24 @@ public class ScheduleService {
         //TODO Reference deviceId.
         Lift lift = liftService.getLiftById(deviceId);
         schedule.setLift(lift);
+
+        Date startDateTime = exchangeLocalDateTimeToDate(schedule.getDate());
+
         String jobId = UUID.randomUUID().toString();
         schedule.setScheduleId(jobId);
-        Date nowTime = new Date();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(nowTime);
-        calendar.add(Calendar.MINUTE, 5);
-        Date startTime = calendar.getTime();
-        System.out.println(nowTime.toString());
-        System.out.println(startTime.toString());
-        jobClient.scheduleDeviceMethod(jobId, "deviceId='" + deviceId + "'",
-                "scheduledUPLift", 5L, 5L, null,
-                startTime, 10);
-
+        log.debug("JobID:" + jobId + "\t" + "start:" + startDateTime.toString());
+        //TODO Handling Exception IotHubTooManyRequestsException
+        jobClient.scheduleDeviceMethod(jobId, "deviceId='" + lift.getDeviceId() + "'",
+                schedule.getApi(), 10L, 10L, null,
+                startDateTime, 10);
         return scheduleRepository.save(schedule);
+    }
+
+    private Date exchangeLocalDateTimeToDate(LocalDateTime localDateTime) {
+        ZoneId zone = ZoneId.of("Asia/Tokyo");
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, zone);
+        Instant instant = zonedDateTime.toInstant();
+        return Date.from(instant);
     }
 
     @Transactional
@@ -61,18 +71,20 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void updateSchedule(Integer deviceId, String scheduleId, Schedule newSchedule) throws IOException, IotHubException {
+    public Schedule updateSchedule(Integer deviceId, String scheduleId, Schedule newSchedule) throws IOException, IotHubException {
         Schedule schedule = getSchedule(deviceId, scheduleId);
         newSchedule.setScheduleId(schedule.getScheduleId());
+        //TODO アップデート変更処理を再度実装すること。
         if (newSchedule.getDate().compareTo(schedule.getDate()) != 0) {
             newSchedule.setDate(schedule.getDate());
+            Date startDateTime = exchangeLocalDateTimeToDate(newSchedule.getDate());
             jobClient.cancelJob(newSchedule.getScheduleId());
             jobClient.scheduleDeviceMethod(newSchedule.getScheduleId(), "deviceId='" + deviceId + "'",
-                    "scheduledUPLift", 5L, 5L, null,
-                    new Date(), 10);
+                    newSchedule.getApi(), 5L, 5L, null,
+                    startDateTime, 10);
         }
 
-        scheduleRepository.save(newSchedule);
+        return scheduleRepository.save(newSchedule);
     }
 
     @PostAuthorize("hasRole('ROLE_ADMIN') or (returnObject.getLift().user == principal.username)")
@@ -85,4 +97,12 @@ public class ScheduleService {
         return schedule;
     }
 
+    public List<Schedule> getSchduleDoYet() {
+        List<Schedule> schedules = scheduleRepository.findByStatusNot("completed");
+        return schedules;
+    }
+
+    public void updateStatus(Schedule schedule) {
+        scheduleRepository.save(schedule);
+    }
 }

@@ -28,8 +28,8 @@ public class Lift {
     @Column(unique = true)
     private String imsi;
     @OneToOne(fetch = FetchType.LAZY,
-    cascade =  CascadeType.ALL,
-    mappedBy = "lift")
+            cascade = CascadeType.ALL, mappedBy = "lift")
+    @JsonIgnore
     private StoredItem things;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lift")
