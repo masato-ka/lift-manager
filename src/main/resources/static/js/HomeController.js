@@ -1,4 +1,4 @@
-angular.module("my-app").controller('HomeController', function ($scope, $http, SharedStateService) {
+angular.module("my-app").controller('HomeController', function ($scope, $http, $timeout, SharedStateService) {
 
     $scope.data = SharedStateService;
 
@@ -13,9 +13,9 @@ angular.module("my-app").controller('HomeController', function ($scope, $http, S
         } else {
             $scope.data.liftId = data[0]['liftId'];
             $scope.data.deviceId = data[0]['deviceId'];
-            getDeviceEvent(data[0]['liftId']);
-            getDeviceItem(data[0]['liftId']);
-            getDeviceSchedule(data[0]['liftId']);
+            this.getDeviceEvent(data[0]['liftId']);
+            this.getDeviceItem(data[0]['liftId']);
+            this.getDeviceSchedule(data[0]['liftId']);
         }
     }).error(function (data, status, headers, config) {
         ons.notification.alert('Failed request.');
@@ -28,32 +28,42 @@ angular.module("my-app").controller('HomeController', function ($scope, $http, S
         }).success(function (data, status, headers, config) {
             $scope.data.liftId = data['liftId'];
             $scope.data.deviceId = data['deviceId'];
-            getDeviceEvent($scope.selectedLiftId);
-            getDeviceItem($scope.selectedLiftId);
-            getDeviceSchedule($scope.selectedLiftId);
+            this.getDeviceEvent($scope.selectedLiftId);
+            this.getDeviceItem($scope.selectedLiftId);
+            this.getDeviceSchedule($scope.selectedLiftId);
         });
     };
+
+    $scope.load = function ($done) {
+        $timeout(function () {
+            getDeviceEvent($scope.data.liftId);
+            $done();
+        }.bind(this), 1000);
+    }.bind(this);
+
 
     getDeviceEvent = function (liftId) {
         $http({
             method: 'GET',
             url: '/api/v1/devices/' + liftId + '/events'
         }).success(function (data, status, headers, config) {
-            if (data.length <= 0) {
-                $scope.data.imageLift = "images/down.png";
-                $scope.data.liftStatus = "DOWN";
-                $scope.data.itemStatus = "TAKEN";
-                $scope.data.item.weight = 0;
-            } else {
-                if (data[0]['liftStatus'] == "UP") {
-                    $scope.data.imageLift = "images/up.png";
-                } else {
-                    $scope.data.imageLift = "images/down.png";
+            $scope.data.event = [];
+            for (var d of data) {
+                var event = {
+                    datetime: d['eventTime'],
+                    itemStatus: d['itemStatus'],
+                    liftStatus: d['liftStatus'],
+                    weight: d['weight']
                 }
-                $scope.itemStatus = data[0]['liftStatus'];
-                $scope.data.liftStatus = data[0]['liftStatus'];
-                $scope.data.item.weight = data[0]['weight'];
+                $scope.data.event.unshift(event);
             }
+
+            if (data[0]['liftStatus'] == "UP") {
+                $scope.data.imageLift = "images/up.png";
+            } else {
+                $scope.data.imageLift = "images/down.png";
+            }
+
         }).error(function (data, status, headers, config) {
             ons.notification.alert("Failed get device details.");
         });
@@ -79,5 +89,14 @@ angular.module("my-app").controller('HomeController', function ($scope, $http, S
             $scope.data.schedules = data;
         })
     }
+
+    $scope.load = function ($done) {
+        $timeout(function () {
+            getDeviceEvent($scope.data.liftId);
+            getDeviceSchedule($scope.data.liftId);
+            getDeviceItem($scope.data.liftId);
+            $done();
+        }.bind(this), 1000);
+    }.bind(this);
 
 });

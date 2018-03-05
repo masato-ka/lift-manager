@@ -8,6 +8,34 @@
             </span>
     </ons-pull-hook>
 
+    <ons-card ng-show="showInputFeeld">
+        <div class="title">
+            <ons-input id="scheduleName" modifier="underbar" ng-model="scheduleName" placeholder="schedule name"
+                       float></ons-input>
+        </div>
+        <div class="content">
+
+            <ons-list>
+                <ons-list-header>Details</ons-list-header>
+                <ons-list-item>
+                    Date:
+                    <ons-input id="date" modifier="underbar" type="datetime-local" ng-model="scheduleDate"
+                               placeholder="yyyy-MM-ddTHH:mm:ss" float></ons-input>
+                </ons-list-item>
+                <ons-list-item>Status: create</ons-list-item>
+                <ons-list-item>
+                    Description:
+                    <ons-input id="scheduleDescrition" modifier="underbar" ng-model="scheduleDescription"
+                               placeholder="schedule description" float></ons-input>
+                </ons-list-item>
+            </ons-list>
+        </div>
+        <div>
+            <ons-button ng-click="update()">SAVE</ons-button>
+            <ons-button ng-click="cancelCard()">CANCEL</ons-button>
+        </div>
+    </ons-card>
+
     <ons-card ng-repeat="schedule in data.schedules">
         <div class="title">
             Schedule of {{schedule.name}} in {{data.deviceId}}
@@ -30,20 +58,20 @@
         </div>
     </ons-card>
     <ons-fab position="bottom right">
-        <ons-icon ng-click="update()" page="" icon="md-plus"></ons-icon>
+        <ons-icon ng-click="addNewCard()" page="" icon="md-plus"></ons-icon>
     </ons-fab>
+    <!--
+        <p style="text-align: center;font-size: 300%">
 
-    <p style="text-align: center;font-size: 300%">
-    <div>
-        <ons-input id="date" modifier="underbar" type="datetime-local" ng-model="scheduleDate"
-                   placeholder="yyyy-MM-ddTHH:mm:ss" float></ons-input>
-        <ons-input id="scheduleName" modifier="underbar" ng-model="scheduleName" placeholder="schedule name"
-                   float></ons-input>
-        <ons-input id="scheduleDescrition" modifier="underbar" ng-model="scheduleDescription"
-                   placeholder="schedule description" float></ons-input>
-    </div>
-    </p>
-    <p style="text-align: center">
+            <ons-input id="date" modifier="underbar" type="datetime-local" ng-model="scheduleDate"
+                       placeholder="yyyy-MM-ddTHH:mm:ss" float></ons-input><br>
+            <ons-input id="scheduleName" modifier="underbar" ng-model="scheduleName" placeholder="schedule name"
+                       float></ons-input><br>
+            <ons-input id="scheduleDescrition" modifier="underbar" ng-model="scheduleDescription"
+                       placeholder="schedule description" float></ons-input>
 
-    </p>
+        </p>
+        <p style="text-align: center">
+
+        </p>-->
 </ons-page>

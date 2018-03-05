@@ -1,0 +1,48 @@
+<ons-page id="Home" ng-controller="HomeController">
+
+    <ons-pull-hook ng-action="load($done)" var="loader">
+            <span ng-switch="loader.state">
+                <span ng-switch-when="initial"><ons-icon size="35px" icon="ion-arrow-down-a"></ons-icon> Pull down to refresh</span>
+                <span ng-switch-when="preaction"><ons-icon size="35px" icon="ion-arrow-up-a"></ons-icon> Release to refresh</span>
+                <span ng-switch-when="action"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading data...</span>
+            </span>
+    </ons-pull-hook>
+
+
+    <ons-select id="choose-sel" ng-model="selectedLiftId" ng-change="onSelect()">
+        <option ng-repeat="d in devices" value={{d.liftId}}>{{d.deviceId}}</option>
+    </ons-select>
+
+
+    <ons-card>
+        <img ng-src="{{data.imageLift}}" alt="Lift Status" style="width: 100%">
+        <div class="title">
+            {{data.deviceId}}
+        </div>
+        <div class="content">
+            <div>
+                <ons-button>
+                    <ons-icon icon="ion-edit"></ons-icon>
+                </ons-button>
+                <ons-button>
+                    <ons-icon icon="ion-ios-trash"></ons-icon>
+                </ons-button>
+            </div>
+            <ons-list>
+                <ons-list-header>Status</ons-list-header>
+                <ons-list-item>Lift Status is {{data.event[0].liftStatus}}</ons-list-item>
+                <ons-list-item>Item Status is {{data.event[0].itemStatus}}</ons-list-item>
+                <ons-list-header>Event</ons-list-header>
+                <ons-list-item ng-repeat="event in data.event">{{event.datetime}} :
+                    {{event.liftStatus}}-{{event.itemStatus}}-{{event.weight}}g
+                </ons-list-item>
+                <ons-list-header>Schedule</ons-list-header>
+                <ons-list-item ng-repeat="schedule in data.schedules">{{schedule.date}} : {{schedule.name}}
+                </ons-list-item>
+            </ons-list>
+        </div>
+    </ons-card>
+
+    <br>
+
+</ons-page>

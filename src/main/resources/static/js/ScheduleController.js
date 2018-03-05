@@ -2,6 +2,11 @@ angular.module("my-app").controller("ScheduleController", function ($scope, $htt
 
     $scope.data = SharedStateService;
     $scope.scheduleDate = $filter('date')(new Date(), "yyyy-MM-ddTHH:mm:ss");
+    $scope.scheduleName = "";
+    $scope.scheduleDescription = "";
+    $scope.showInputFeeld = false;
+
+    $scope.new_schedules = [];
 
     $scope.update = function () {
         $http({
@@ -17,11 +22,19 @@ angular.module("my-app").controller("ScheduleController", function ($scope, $htt
             })
         }).success(function (data, status, headers, config) {
             getDeviceSchedule($scope.data.liftId);
+            $scope.showInputFeeld = false;
         }).error(function (data, status, headers, config) {
             ons.notification.alert("Failed Update item name");
         })
     };
 
+    $scope.addNewCard = function () {
+        $scope.showInputFeeld = true;
+    }
+
+    $scope.cancelCard = function () {
+        $scope.showInputFeeld = false;
+    }
 
     $scope.load = function ($done) {
         $timeout(function () {

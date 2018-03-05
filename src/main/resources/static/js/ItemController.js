@@ -1,4 +1,4 @@
-angular.module("my-app").controller("ItemController", function ($scope, $http, SharedStateService) {
+angular.module("my-app").controller("ItemController", function ($scope, $http, $timeout, SharedStateService) {
 
     $scope.data = SharedStateService;
 
@@ -17,5 +17,39 @@ angular.module("my-app").controller("ItemController", function ($scope, $http, S
             ons.notification.alert("Failed Update item name");
         })
     };
+
+    $scope.load = function ($done) {
+        $timeout(function () {
+            getDeviceEvent($scope.data.liftId);
+            $done();
+        }.bind(this), 1000);
+    }.bind(this);
+
+    /*    getDeviceEvent = function (liftId) {
+            $http({
+                method: 'GET',
+                url: '/api/v1/devices/' + liftId + '/events'
+            }).success(function (data, status, headers, config) {
+                if (data.length <= 0) {
+                    $scope.data.imageLift = "images/down.png";
+                    $scope.data.itemStatus = "TAKEN";
+                    $scope.data.liftStatus = "DOWN";
+                    $scope.data.item.weight = 0;
+                } else {
+                    if (data[0]['liftStatus'] == "UP") {
+                        $scope.data.imageLift = "images/up.png";
+                    } else {
+                        $scope.data.imageLift = "images/down.png";
+                    }
+                    $scope.itemStatus = data[0]['itemStatus'];
+                    $scope.data.liftStatus = data[0]['liftStatus'];
+                    $scope.data.item.weight = data[0]['weight'];
+                }
+            }).error(function (data, status, headers, config) {
+                ons.notification.alert("Failed get device details.");
+            });
+
+        }
+    */
 
 });
