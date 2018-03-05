@@ -1,5 +1,7 @@
 package ka.masato.lift.liftdevicemanager.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Table
+@Table(name = "schedule")
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,13 +18,17 @@ import java.time.LocalDateTime;
 public class Schedule {
 
     @Id
-    @GeneratedValue
-    private Integer scheduleId;
-    private String Name;
+    private String scheduleId;
+    private String name;
     private String description;
-    @ManyToOne
-    private Status desireStatus;
+    private String api;
+    private String status;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime date;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "liftId")
+    @JsonIgnore
     private Lift lift;
 }

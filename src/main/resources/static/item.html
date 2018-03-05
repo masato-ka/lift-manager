@@ -1,0 +1,43 @@
+<ons-page id="item" ng-controller="ItemController as item">
+
+    <ons-pull-hook ng-action="load($done)" var="loader">
+            <span ng-switch="loader.state">
+                <span ng-switch-when="initial"><ons-icon size="35px" icon="ion-arrow-down-a"></ons-icon> Pull down to refresh</span>
+                <span ng-switch-when="preaction"><ons-icon size="35px" icon="ion-arrow-up-a"></ons-icon> Release to refresh</span>
+                <span ng-switch-when="action"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading data...</span>
+            </span>
+    </ons-pull-hook>
+
+
+    <ons-card>
+        <div class="title">
+            Item of {{data.deviceId}}
+        </div>
+        <div class="content">
+            <img src='/images/weight.png' style="width: 50%">
+
+            <div>
+                <ons-button>
+                    <ons-icon icon="ion-edit"></ons-icon>
+                </ons-button>
+                <ons-button>
+                    <ons-icon icon="ion-ios-trash"></ons-icon>
+                </ons-button>
+                <ons-button ng-click="update()">Update</ons-button>
+
+            </div>
+            <ons-list>
+                <ons-list-header>Details</ons-list-header>
+                <ons-list-item>Waight: {{data.event[0].weight}}</ons-list-item>
+                <ons-list-item>
+                    <ons-input id="name" modifier="underbar" placeholder="Type your item name" ng-model="data.item.name"
+                               float>
+                    </ons-input>
+                </ons-list-item>
+                <ons-list-item>{{schedule.description}}</ons-list-item>
+            </ons-list>
+        </div>
+    </ons-card>
+
+
+</ons-page>

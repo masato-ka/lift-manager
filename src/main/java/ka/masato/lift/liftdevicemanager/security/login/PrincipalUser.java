@@ -10,7 +10,9 @@ public class PrincipalUser extends org.springframework.security.core.userdetails
     private final LiftUser user;
 
     public PrincipalUser(LiftUser user){
-        super(user.getUserId(),user.getEncodedPassword(), AuthorityUtils.createAuthorityList("ROLE_USER"));
+        super(user.getUserId(), user.getEncodedPassword(),
+                true, true, true, true,
+                AuthorityUtils.createAuthorityList(user.getUserRole()));
         this.user = user;
     }
 

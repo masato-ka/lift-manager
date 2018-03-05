@@ -23,12 +23,13 @@ public class Lift {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer liftId;
     @NotNull //Please add annotation for Unique.
-    //TODO Do Not Update deviceName;
     private String deviceId;
+    @NotNull
+    @Column(unique = true)
     private String imsi;
     @OneToOne(fetch = FetchType.LAZY,
-    cascade =  CascadeType.ALL,
-    mappedBy = "lift")
+            cascade = CascadeType.ALL, mappedBy = "lift")
+    @JsonIgnore
     private StoredItem things;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lift")
@@ -42,8 +43,5 @@ public class Lift {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
     @JsonIdentityReference(alwaysAsId = true)
     private LiftUser user;
-
-
-
 
 }

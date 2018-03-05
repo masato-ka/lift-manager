@@ -40,7 +40,7 @@ public class EventApi {
     }
 
     @GetMapping(value = "/devices/{id}/events")
-    @ApiOperation(value = "デバイスに追加されたイベントを追加する。", response = Event.class)
+    @ApiOperation(value = "デバイスに追加されたイベントを追加する。", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "デバイスのイベントの取得に成功した。"),
     }

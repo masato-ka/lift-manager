@@ -1,5 +1,6 @@
 package ka.masato.lift.liftdevicemanager.application;
 
+import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
 import ka.masato.lift.liftdevicemanager.domain.model.Lift;
 import ka.masato.lift.liftdevicemanager.domain.model.Schedule;
 import ka.masato.lift.liftdevicemanager.domain.service.LiftsService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,30 +26,40 @@ public class ScheduleApi {
         this.liftsService = liftsService;
     }
 
-    @GetMapping(value = "/devices/{id}/schedules")
+    @GetMapping(value = "/devices/{deviceId}/schedules")
     public List<Schedule> getAllSchedule(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer deviceId){
-        Lift lift = liftsService.getLiftById(user.getUser(), deviceId);
+        Lift lift = liftsService.getLiftById(deviceId);
         List<Schedule> schedules = lift.getSchedules();
         return schedules;
     }
 
-    @GetMapping(value="/devices/{id}/schedules/{scheduleId}")
+    @GetMapping(value = "/devices/{deviceId}/schedules/{scheduleId}")
     public Schedule getOneSchedule(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer deviceId,
-                                   @PathVariable Integer scheduleId){
-        Schedule schedule= scheduleService.getSchedule(user.getUser(), deviceId, scheduleId);
+                                   @PathVariable String scheduleId) {
+        Schedule schedule = scheduleService.getSchedule(deviceId, scheduleId);
         return schedule;
     }
 
-    @PostMapping("/devices/{id}/schedules")
+    @PostMapping("/devices/{deviceId}/schedules")
     @ResponseStatus(code = HttpStatus.CREATED)
     public Schedule createNewSchedule(@AuthenticationPrincipal PrincipalUser user,
-                                            @PathVariable Integer deviceId, @RequestBody Schedule schedule){
-        Lift lift = liftsService.getLiftById(user.getUser(), deviceId);
-        schedule.setLift(lift);
-        return scheduleService.createSchedule(schedule);
+                                      @PathVariable Integer deviceId, @RequestBody Schedule schedule) throws IOException, IotHubException {
+        return scheduleService.createSchedule(deviceId, schedule);
     }
 
 
+    @PutMapping("/devices/{deviceId}/schedules/{scheduleId}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public Schedule updateSchedule(@PathVariable Integer deviceId, @PathVariable String scheduleId,
+                                   @RequestBody Schedule schedule) throws IOException, IotHubException {
+        return scheduleService.updateSchedule(deviceId, scheduleId, schedule);
+    }
+
+    @DeleteMapping("/devices/{deviceId}/schedules/{scheduleId}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteSchedule(@PathVariable Integer deviceId, @PathVariable String scheduleId) throws IOException, IotHubException {
+        scheduleService.cancelSchedule(deviceId, scheduleId);
+    }
 
 
 }
