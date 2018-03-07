@@ -63,6 +63,8 @@ public class LiftsService {
     public Lift updateLift(Lift lift) {
 
         Lift origin = getUpdateOrigin(lift);
+        origin.setDeviceId(lift.getDeviceId());
+        origin.setImsi(lift.getImsi());
         Lift result = liftsRepository.save(origin);
         return result;
     }
@@ -70,8 +72,6 @@ public class LiftsService {
     @PostAuthorize("hasRole('ROLE_ADMIN') or (#lift.user == principal.username)")
     private Lift getUpdateOrigin(Lift lift) {
         Lift origin = liftsRepository.findOne(lift.getLiftId());
-        origin.setDeviceId(lift.getDeviceId());
-        origin.setImsi(lift.getImsi());
         return origin;
     }
 
