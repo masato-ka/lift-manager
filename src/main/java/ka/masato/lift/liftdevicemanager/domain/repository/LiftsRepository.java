@@ -12,5 +12,6 @@ public interface LiftsRepository extends JpaRepository<Lift, Integer>{
 
     public Lift findByDeviceId(String deviceName);
 
+    public Lift findByImsi(String imsi);
     public List<Lift> findByUser(LiftUser userId);
 }

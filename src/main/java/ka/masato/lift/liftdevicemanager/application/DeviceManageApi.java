@@ -56,7 +56,7 @@ public class DeviceManageApi {
     }
 
     @GetMapping("deviceName/{deviceName}")
-    @ApiOperation(value = "ユーザの持つLiftの一覧を返す", response = Iterable.class)
+    @ApiOperation(value = "デバイス名のデバイスを返す", response = Iterable.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "リクエストが正常に処理された。"),
     }
@@ -65,6 +65,16 @@ public class DeviceManageApi {
         Lift lift = liftsService.getLiftByDeviceId(deviceName);
         return lift;
 
+    }
+
+    @GetMapping("imsi/{imsi}")
+    @ApiOperation(value = "指定されたIMSIのデバイス情報を返す", response = Lift.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "リクエストが正常に処理された。")
+    })
+    public Lift getLiftWithImsi(@PathVariable String imsi) {
+        Lift lift = liftsService.getLiftWithImsi(imsi);
+        return lift;
     }
 
     @GetMapping(value="{id}")

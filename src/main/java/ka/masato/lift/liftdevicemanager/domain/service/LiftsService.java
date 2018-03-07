@@ -92,4 +92,11 @@ public class LiftsService {
         return result;
     }
 
+    //TODO nullが帰ってきた場合の処理
+    @PostAuthorize("hasRole('ROLE_ADMIN') or (returnObject.user.userId == principal.username)")
+    public Lift getLiftWithImsi(String imsi) {
+        Lift result = liftsRepository.findByImsi(imsi);
+        return result;
+    }
+
 }
