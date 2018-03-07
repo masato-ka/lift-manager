@@ -50,7 +50,7 @@ public class ScheduleService {
         schedule.setScheduleId(jobId);
         log.debug("JobID:" + jobId + "\t" + "start:" + startDateTime.toString());
         //TODO Handling Exception IotHubTooManyRequestsException
-        jobClient.scheduleDeviceMethod(jobId, "deviceId='" + lift.getDeviceId() + "'",
+        jobClient.scheduleDeviceMethod(jobId, "deviceId='" + lift.getImsi() + "'",
                 schedule.getApi(), 10L, 10L, null,
                 startDateTime, 10);
         return scheduleRepository.save(schedule);
