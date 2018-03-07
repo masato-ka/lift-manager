@@ -1,6 +1,7 @@
 package ka.masato.lift.liftdevicemanager.domain.service;
 
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.sdk.iot.service.exceptions.IotHubTooManyRequestsException;
 import com.microsoft.azure.sdk.iot.service.jobs.JobClient;
 import ka.masato.lift.liftdevicemanager.domain.model.Lift;
 import ka.masato.lift.liftdevicemanager.domain.model.Schedule;
@@ -8,6 +9,7 @@ import ka.masato.lift.liftdevicemanager.domain.repository.ScheduleRepository;
 import ka.masato.lift.liftdevicemanager.domain.service.exceptions.UserPermitRefferenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +18,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -50,9 +51,13 @@ public class ScheduleService {
         schedule.setScheduleId(jobId);
         log.debug("JobID:" + jobId + "\t" + "start:" + startDateTime.toString());
         //TODO Handling Exception IotHubTooManyRequestsException
-        jobClient.scheduleDeviceMethod(jobId, "deviceId='" + lift.getImsi() + "'",
-                schedule.getApi(), 10L, 10L, null,
-                startDateTime, 10);
+        try {
+            jobClient.scheduleDeviceMethod(jobId, "deviceId='" + lift.getImsi() + "'",
+                    schedule.getApi(), 10L, 10L, null,
+                    startDateTime, 10);
+        } catch (IotHubTooManyRequestsException exception) {
+            log.error("The number of active job is max at IoT Hub.");
+        }
         return scheduleRepository.save(schedule);
     }
 
@@ -105,4 +110,17 @@ public class ScheduleService {
     public void updateStatus(Schedule schedule) {
         scheduleRepository.save(schedule);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<Schedule> getAllPendingStatus() {
+        return scheduleRepository.findByStatus("pending");
+    }
+
+    //TODO Authorize
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or liftsService.getLiftById(deviceId).user == principal.username")
+/*    public List<Schedule> getSchdules(Integer deviceId){
+        List<Schedule> schedules = scheduleRepository.findTop5ByLiftOrderByDateAsc(deviceId);
+
+        return schedules;
+    }*/
 }

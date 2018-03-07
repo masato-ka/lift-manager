@@ -8,6 +8,21 @@ angular.module("my-app").controller("ScheduleController", function ($scope, $htt
 
     $scope.new_schedules = [];
 
+    $scope.delete = function (scheduleId) {
+        $http({
+            method: 'DELETE',
+            url: '/api/v1/devices/' + $scope.data.liftId + '/schedules/' + scheduleId,
+            header: {"Content-Type": "application/json"}
+
+        }).success(function (data, status, headers, config) {
+            $scope.data.schedules.filter(function (element, index, array) {
+                return (element['scheduleId'] != scheduleId);
+            })
+        }).error(function (data, status, headers, config) {
+            ons.notification.alert("Failed Update item name");
+        })
+    };
+
     $scope.update = function () {
         $http({
             method: 'POST',
@@ -24,11 +39,14 @@ angular.module("my-app").controller("ScheduleController", function ($scope, $htt
             getDeviceSchedule($scope.data.liftId);
             $scope.showInputFeeld = false;
         }).error(function (data, status, headers, config) {
-            ons.notification.alert("Failed Update item name");
+            ons.notification.alert("Failed create job");
         })
     };
 
     $scope.addNewCard = function () {
+        $scope.scheduleDate = $filter('date')(new Date(), "yyyy-MM-ddTHH:mm:ss");
+        $scope.scheduleName = "";
+        $scope.scheduleDescription = "";
         $scope.showInputFeeld = true;
     }
 
