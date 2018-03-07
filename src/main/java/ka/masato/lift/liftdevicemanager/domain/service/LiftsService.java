@@ -55,7 +55,7 @@ public class LiftsService {
         lift.setLiftId(id);
         Lift prevLift = getUpdateOrigin(lift);
         liftsRepository.delete(prevLift.getLiftId());
-        registryManager.removeDevice(prevLift.getDeviceId());
+        registryManager.removeDevice(prevLift.getImsi());
         return;
     }
 
