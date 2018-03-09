@@ -29,7 +29,8 @@ public class ScheduleApi {
     @GetMapping(value = "/devices/{deviceId}/schedules")
     public List<Schedule> getAllSchedule(@AuthenticationPrincipal PrincipalUser user, @PathVariable Integer deviceId){
         Lift lift = liftsService.getLiftById(deviceId);
-        List<Schedule> schedules = lift.getSchedules();
+        //List<Schedule> schedules = lift.getSchedules();
+        List<Schedule> schedules = scheduleService.getSchdules(lift);
         return schedules;
     }
 

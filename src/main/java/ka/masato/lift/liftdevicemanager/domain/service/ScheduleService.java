@@ -116,11 +116,9 @@ public class ScheduleService {
         return scheduleRepository.findByStatus("pending");
     }
 
-    //TODO Authorize
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or liftsService.getLiftById(deviceId).user == principal.username")
-/*    public List<Schedule> getSchdules(Integer deviceId){
-        List<Schedule> schedules = scheduleRepository.findTop5ByLiftOrderByDateAsc(deviceId);
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #lift.user.userId == principal.username")
+    public List<Schedule> getSchdules(Lift lift) {
+        List<Schedule> schedules = scheduleRepository.findTop5ByLiftOrderByDateAsc(lift);
         return schedules;
-    }*/
+    }
 }

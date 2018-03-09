@@ -2,10 +2,9 @@ package ka.masato.lift.liftdevicemanager.domain.service;
 
 import ka.masato.lift.liftdevicemanager.domain.model.Event;
 import ka.masato.lift.liftdevicemanager.domain.model.Lift;
-import ka.masato.lift.liftdevicemanager.domain.model.LiftUser;
 import ka.masato.lift.liftdevicemanager.domain.repository.EventsRepository;
 import ka.masato.lift.liftdevicemanager.domain.repository.LiftsRepository;
-import ka.masato.lift.liftdevicemanager.domain.service.exceptions.UserPermitRefferenceException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,23 +22,17 @@ public class EventsService {
     }
 
     @Transactional
-    public Event createNewEvent(LiftUser user, Integer liftId, Event event) {
-        Lift lift = liftsService.findOne(liftId);
-        if (!lift.getUser().getUserId().equals(user.getUserId())) {
-            throw new UserPermitRefferenceException();
-        }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #lift.user.userId == principal.username")
+    public Event createNewEvent(Lift lift, Event event) {
         event.setLift(lift);
         Event result = eventsRepository.save(event);
         return result;
     }
 
-    public List<Event> getDeviceEvent(LiftUser user, Integer liftId) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #lift.user.userId == principal.username")
+    public List<Event> getDeviceEvent(Lift lift) {
         List<Event> result = null;
-        Lift lift = liftsService.findOne(liftId);
-        if (!lift.getUser().getUserId().equals(user.getUserId())) {
-            throw new UserPermitRefferenceException();
-        }
-        result = lift.getEvents();
+        result = eventsRepository.findTop5ByLiftOrderByEventTimeAsc(lift);
         return result;
     }
 
