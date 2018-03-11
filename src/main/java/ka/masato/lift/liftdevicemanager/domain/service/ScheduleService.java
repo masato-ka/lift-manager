@@ -118,7 +118,7 @@ public class ScheduleService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or #lift.user.userId == principal.username")
     public List<Schedule> getSchdules(Lift lift) {
-        List<Schedule> schedules = scheduleRepository.findTop5ByLiftOrderByDateAsc(lift);
+        List<Schedule> schedules = scheduleRepository.findTop5ByLiftOrderByDateDesc(lift);
         return schedules;
     }
 }
