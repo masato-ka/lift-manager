@@ -46,7 +46,8 @@ public class ScheduleService {
         schedule.setLift(lift);
         LocalDateTime scheduleTime = schedule.getDate();
         if (scheduleTime == null) {
-            scheduleTime = LocalDateTime.now().plusMinutes(2);
+            //TODO change handling Zone
+            scheduleTime = LocalDateTime.now().plusMinutes(2).plusHours(9);//because Azure App Services use GMT
             schedule.setDate(scheduleTime);
         }
         Date startDateTime = exchangeLocalDateTimeToDate(scheduleTime);
