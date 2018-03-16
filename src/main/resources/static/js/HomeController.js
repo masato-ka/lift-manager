@@ -56,13 +56,14 @@ angular.module("my-app").controller('HomeController', function ($scope, $http, $
                     weight: d['weight']
                 }
                 $scope.data.event.unshift(event);
+                if (d['liftStatus'] === "UP") {
+                    $scope.data.imageLift = "images/up.png";
+                } else {
+                    $scope.data.imageLift = "images/down.png";
+                }
+
             }
 
-            if (data[0]['liftStatus'] === "UP") {
-                $scope.data.imageLift = "images/up.png";
-            } else {
-                $scope.data.imageLift = "images/down.png";
-            }
 
         }).error(function (data, status, headers, config) {
             ons.notification.alert("Failed get device details.");
