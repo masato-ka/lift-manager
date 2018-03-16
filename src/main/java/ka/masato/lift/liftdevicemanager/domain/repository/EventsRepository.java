@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface EventsRepository extends JpaRepository<Event, Integer> {
 
-    public List<Event> findTop5ByLiftOrderByEventTimeAsc(Lift lift);
+    public List<Event> findTop5ByLiftOrderByEventTimeDesc(Lift lift);
 }

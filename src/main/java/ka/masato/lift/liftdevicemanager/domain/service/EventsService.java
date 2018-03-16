@@ -32,7 +32,7 @@ public class EventsService {
     @PreAuthorize("hasRole('ROLE_ADMIN') or #lift.user.userId == principal.username")
     public List<Event> getDeviceEvent(Lift lift) {
         List<Event> result = null;
-        result = eventsRepository.findTop5ByLiftOrderByEventTimeAsc(lift);
+        result = eventsRepository.findTop5ByLiftOrderByEventTimeDesc(lift);
         return result;
     }
 
