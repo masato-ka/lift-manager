@@ -32,7 +32,7 @@ public class EventApi {
             @ApiResponse(code = 201, message = "Eventの追加に成功した。"),
     }
     )
-    public Event addNewEvent(Integer liftId, @RequestBody Event event) {
+    public Event addNewEvent(@PathVariable Integer liftId, @RequestBody Event event) {
         Lift lift = liftsService.getLiftById(liftId);
         Event result = eventsService.createNewEvent(lift, event);
         return result;
