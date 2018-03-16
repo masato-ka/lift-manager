@@ -44,7 +44,10 @@ public class ScheduleService {
         //TODO Reference deviceId.
         Lift lift = liftService.getLiftById(deviceId);
         schedule.setLift(lift);
-
+        LocalDateTime scheduleTime = schedule.getDate();
+        if (scheduleTime == null) {
+            scheduleTime = LocalDateTime.now();
+        }
         Date startDateTime = exchangeLocalDateTimeToDate(schedule.getDate());
 
         String jobId = UUID.randomUUID().toString();
