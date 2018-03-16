@@ -48,7 +48,7 @@ public class ScheduleService {
         if (scheduleTime == null) {
             scheduleTime = LocalDateTime.now();
         }
-        Date startDateTime = exchangeLocalDateTimeToDate(schedule.getDate());
+        Date startDateTime = exchangeLocalDateTimeToDate(scheduleTime);
 
         String jobId = UUID.randomUUID().toString();
         schedule.setScheduleId(jobId);
