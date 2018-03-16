@@ -55,13 +55,14 @@ angular.module("my-app").controller('HomeController', function ($scope, $http, $
                     liftStatus: d['liftStatus'],
                     weight: d['weight']
                 }
-                $scope.data.event.unshift(event);
-                if (d['liftStatus'] === "UP") {
-                    $scope.data.imageLift = "images/up.png";
-                } else {
-                    $scope.data.imageLift = "images/down.png";
-                }
+                $scope.data.event.push(event);
 
+            }
+
+            if (data[0]['liftStatus'] === "UP") {
+                $scope.data.imageLift = "images/up.png";
+            } else {
+                $scope.data.imageLift = "images/down.png";
             }
 
 
