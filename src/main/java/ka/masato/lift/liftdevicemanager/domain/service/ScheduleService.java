@@ -46,7 +46,8 @@ public class ScheduleService {
         schedule.setLift(lift);
         LocalDateTime scheduleTime = schedule.getDate();
         if (scheduleTime == null) {
-            scheduleTime = LocalDateTime.now();
+            scheduleTime = LocalDateTime.now().plusMinutes(2);
+            schedule.setDate(scheduleTime);
         }
         Date startDateTime = exchangeLocalDateTimeToDate(scheduleTime);
 
